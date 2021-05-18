@@ -35,7 +35,7 @@ const start = () => {
                 await bot.sendSticker(chatId, helloSticker)
                 break
             case '/info':
-                await bot.sendMessage(chatId, `Ваши данные👀\n\nИмя: ${msg.from.first_name ? msg.from.first_name : 'Хз'}\nФамилия: ${msg.from.last_name ? msg.from.last_name : 'Хз'}\nНикНейм: ${msg.from.username ? msg.from.username : 'Хз'}`)
+                await bot.sendMessage(chatId, `Ваши данные👀\n\nИмя: ${msg.from.first_name ? msg.from.first_name : 'Пусто'}\nФамилия: ${msg.from.last_name ? msg.from.last_name : 'Пусто'}\nНикНейм: ${msg.from.username ? msg.from.username : 'Пусто'}`)
                 break
             case '/game':
                 return startGame(chatId)
