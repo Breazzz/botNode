@@ -1,10 +1,17 @@
 const TelegramApi = require("node-telegram-bot-api")
-const {gameOptions} = require("./options")
+const {gameOptions, againOptions} = require("./options")
 const token = '1871160679:AAGtgtHOlPaVuc8jL8cueOzRNc8awlURXvw'
 
 const bot = new TelegramApi(token, {polling: true})
 
 const chats = {}
+
+const startGame = async(chatId) => {
+    await bot.sendMessage(chatId, `Я загадал цифру от 0 до 9.`)
+    const randomNumber = Math.floor(Math.random() * 10)
+    chats[chatId] = randomNumber
+    await bot.sendMessage(chatId, 'Угадай!', gameOptions)
+}
 
 const start = () => {
     bot.setMyCommands([
@@ -28,11 +35,7 @@ const start = () => {
                 await bot.sendMessage(chatId, `Ваши данные👀\n\nИмя: ${msg.from.first_name ? msg.from.first_name : 'Хз'}\nФамилия: ${msg.from.last_name ? msg.from.last_name : 'Хз'}\nНикНейм: ${msg.from.username ? msg.from.username : 'Хз'}`)
                 break
             case '/game':
-                await bot.sendMessage(chatId, `Я загадал цифру от 0 до 9.`)
-                const randomNumber = Math.floor(Math.random() * 10)
-                chats[chatId] = randomNumber
-                await bot.sendMessage(chatId, 'Угадай!', gameOptions)
-                break
+                return startGame(chatId)
             default:
                 await bot.sendMessage(chatId, 'Я тебя не понимаю, попробуй еще раз)')
                 break
@@ -41,11 +44,13 @@ const start = () => {
     bot.on('callback_query', async msg => {
         const data = msg.data
         const chatId = msg.message.chat.id
-
-        if (data === chats[chatId]) {
-            return bot.sendMessage(chatId, `${data}? Хм, Красава! Возьми с полки пирожок`)
+        if (data === '/again') {
+            return startGame(chatId)
+        }
+        if (data == chats[chatId]) {
+            return bot.sendMessage(chatId, `${data}? Хм, Красава! Возьми с полки пирожок`, againOptions)
         } else {
-            return bot.sendMessage(chatId, `${data}? Иди поспи.\nМоя цифра: ${chats[chatId]}`)
+            return bot.sendMessage(chatId, `${data}? Иди поспи.\nМоя цифра: ${chats[chatId]}`, againOptions)
         }
     })
 }
